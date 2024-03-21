@@ -1,0 +1,35 @@
+{
+  "user_data": {
+    "id": "65dea6376ffacce",
+    "email": "teewhy@mobiledev.com",
+    "first_name": "teewhy",
+    "last_name": "dope",
+    "tier": "one",
+    "phone_number": "+2349989736516",
+    "smart_saver_balance": 2900000,
+    "green_saver_balance": 20000,
+    "fixed_deposit_balance": 3670000,
+    "email_verified": true,
+    "phone_verified": true
+  },
+  "smart_saver_transactions": [
+    {
+      "amount": 7900,
+      "type": "credit",
+      "narration": "Top up deposit",
+      "date_created": "2023-12-20"
+    },
+    {
+      "amount": 60000,
+      "type": "debit",
+      "narration": "Transfer to X",
+      "date_created": "2023-12-23"
+    },
+    {
+      "amount": 690000,
+      "type": "credit",
+      "narration": "Transfer to X",
+      "date_created": "2023-12-25"
+    }
+  ]
+}

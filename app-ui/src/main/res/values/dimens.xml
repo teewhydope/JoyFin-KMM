@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="login_input_field_top_padding">24dp</dimen>
+    <dimen name="material_dialog_icon_width">320dp</dimen>
+    <dimen name="default_dialog_radius">16dp</dimen>
+    <dimen name="default_dialog_padding">0dp</dimen>
+    <dimen name="default_message_dialog_horizontal_padding">3dp</dimen>
+    <dimen name="default_message_dialog_vertical_padding">12dp</dimen>
+    <dimen name="input_field_padding_with_icon">42dp</dimen>
+    <dimen name="input_field_padding_without_icon">4dp</dimen>
+</resources>

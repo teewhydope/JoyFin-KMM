@@ -1,0 +1,32 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="BaseStyle">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <string name="app_name">JoyFin</string>
+    <string name="email_text">Email</string>
+    <string name="password_text">Password</string>
+    <string name="login">Login</string>
+    <string name="dialog_dismiss_action" tools:ignore="ButtonCase,Typos">Ok</string>
+    <string name="button_action_ok">OK</string>
+    <string name="button_action_cancel">Cancel</string>
+    <string name="alert">Alert</string>
+    <string name="unknown_exception_dialog_title">Something went wrong.</string>
+    <string name="unknown_exception_dialog_description">We encountered an error. Please try again in a few seconds.</string>
+    <string name="no_internet_exception_dialog_title">No internet!</string>
+    <string name="no_internet_exception_dialog_description">Poor network connection detected. Please check your connectivity.\n</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="home_fragment">Home Fragment</string>
+    <string name="home_welcome_label">"Welcome back %1$s"</string>
+    <string name="home_transaction_history_label">"Transaction History"</string>
+    <string name="amount_naira_symbol">"₦ %1$s"</string>
+    <string name="total_balance">Total Balance</string>
+    <string name="input_error_empty">This field is required</string>
+    <string name="input_error_too_short">Input is too short</string>
+    <string name="input_error_wrong_email_pattern">This email is invalid</string>
+    <string name="input_error_minimum_x_characters">Minimum %1$d characters</string>
+    <string name="input_error_invalid_password">Password is invalid</string>
+    <string name="input_error_simple_password">Password needs to have at least two of the following: uppercase character, lowercase character, number or symbol</string>
+
+</resources>

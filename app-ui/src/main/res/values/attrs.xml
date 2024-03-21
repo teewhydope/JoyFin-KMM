@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HomeAccountItemView">
+        <attr name="title" />
+        <attr name="subtitle" />
+    </declare-styleable>
+
+    <declare-styleable name="InputFieldView">
+        <attr name="input_action" format="reference" />
+        <attr name="android:inputType" />
+        <attr name="android:hint" />
+        <attr name="input_validation" />
+        <attr name="input_icon" format="reference" />
+        <attr name="input_minimumCharacters" format="integer" />
+    </declare-styleable>
+
+    <attr name="input_validation" format="enum">
+        <enum name="none" value="0" />
+        <enum name="email" value="1" />
+        <enum name="password" value="2" />
+    </attr>
+
+</resources>

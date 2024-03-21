@@ -1,0 +1,15 @@
+//
+//  Config.xcconfig
+//  iosApp
+//
+//  Created by Animasahun Ibrahim on 19/03/2024.
+//  Copyright © 2024 orgName. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+TEAM_ID=
+BUNDLE_ID=com.teewhydope.app.joyfin.ios
+APP_NAME=JoyFin
+

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ContentDescription"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        app:errorTextColor="@color/red"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeColor="@null"
+        app:boxStrokeErrorColor="@null"
+        app:boxStrokeWidthFocused="0dp"
+        android:backgroundTint="@color/transparent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_input_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="start|center"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:background="@drawable/input_border"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            android:paddingBottom="14dp"
+            android:textSize="16sp"
+            tools:hint="hint" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/text_input_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/red"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/text_input_layout"
+        app:layout_constraintTop_toBottomOf="@+id/text_input_layout"
+        tools:text="Error message"
+        tools:visibility="visible" />
+
+
+    <ImageView
+        android:id="@+id/text_input_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout"
+        app:layout_constraintStart_toStartOf="@+id/text_input_layout"
+        app:layout_constraintTop_toTopOf="@+id/text_input_layout"
+        app:tint="@color/primary"
+        tools:src="@drawable/ic_email" />
+
+</merge>

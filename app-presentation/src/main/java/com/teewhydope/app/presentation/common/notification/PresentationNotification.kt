@@ -1,0 +1,3 @@
+package com.teewhydope.app.presentation.common.notification
+
+interface PresentationNotification
