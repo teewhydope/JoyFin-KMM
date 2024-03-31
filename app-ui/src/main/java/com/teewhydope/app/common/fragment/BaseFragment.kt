@@ -8,7 +8,9 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.teewhydope.app.common.exception.UiException
@@ -22,6 +24,7 @@ import com.teewhydope.app.presentation.common.navigation.PresentationDestination
 import com.teewhydope.app.presentation.common.notification.PresentationNotification
 import com.teewhydope.app.presentation.common.viewmodel.BaseViewModel
 import com.teewhydope.app.ui.R
+import kotlinx.coroutines.launch
 
 abstract class BaseFragment<VIEW_STATE : ViewState, NOTIFICATION : PresentationNotification> :
     Fragment() {
@@ -105,15 +108,36 @@ abstract class BaseFragment<VIEW_STATE : ViewState, NOTIFICATION : PresentationN
     }
 
     private fun observeViewModelInternal() {
-        viewModel.navigationCommands.observe(
-            viewLifecycleOwner,
-            NavigationObserver(destinationMapper, navController)
-        )
-        viewModel.presentationExceptionEvents.observe(
-            viewLifecycleOwner,
-            PresentationExceptionObserver()
-        )
-        viewModel.viewState.observe(viewLifecycleOwner, RenderStateObserver())
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.presentationExceptionEvents.collect(::throwException)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.viewState.collect(::applyViewState)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.destination.collect(::navigate)
+            }
+        }
+    }
+
+    private fun navigate(destination: PresentationDestination) {
+        destinationMapper.map(destination).navigate(navController)
+    }
+
+    private fun throwException(exception: PresentationException) {
+        notifyError(presentationToUiExceptionMapper.toUi(exception))
+    }
+
+    private fun applyViewState(viewState: VIEW_STATE) {
+        renderViewState(viewState)
     }
 
     override fun onStart() {
@@ -146,23 +170,6 @@ abstract class BaseFragment<VIEW_STATE : ViewState, NOTIFICATION : PresentationN
     }
 
     open fun onAcceptErrorResult() = Unit
-
-    private class NavigationObserver(
-        private val destinationMapper: UiDestinationMapper,
-        private val navController: NavController
-    ) : Observer<PresentationDestination> {
-        override fun onChanged(value: PresentationDestination): Unit =
-            destinationMapper.map(value).navigate(navController)
-    }
-
-    inner class PresentationExceptionObserver : Observer<PresentationException> {
-        override fun onChanged(value: PresentationException) =
-            notifyError(presentationToUiExceptionMapper.toUi(value))
-    }
-
-    inner class RenderStateObserver : Observer<VIEW_STATE> {
-        override fun onChanged(value: VIEW_STATE) = renderViewState(value)
-    }
 }
 
 private fun FragmentManager.attachFragmentResultListeners(

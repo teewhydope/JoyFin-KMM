@@ -1,13 +1,10 @@
 package com.teewhydope.app.presentation.common.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teewhydope.app.domain.common.model.exception.DomainException
 import com.teewhydope.app.domain.common.usecase.UseCaseExecutor
 import com.teewhydope.app.logger.globalLogger
-import com.teewhydope.app.presentation.common.internal.SingleLiveEvent
 import com.teewhydope.app.presentation.common.internal.ViewState
 import com.teewhydope.app.presentation.common.internal.exception.GeneralDomainToPresentationExceptionMapper
 import com.teewhydope.app.presentation.common.internal.exception.PresentationException
@@ -19,7 +16,12 @@ import com.teewhydope.app.presentation.common.viewmodel.NotificationState.Failur
 import com.teewhydope.app.presentation.common.viewmodel.NotificationState.Loading
 import com.teewhydope.app.presentation.common.viewmodel.NotificationState.Normal
 import com.teewhydope.app.presentation.common.viewmodel.NotificationState.Success
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<VIEW_STATE : ViewState, NOTIFICATION : PresentationNotification> :
     ViewModel() {
@@ -28,23 +30,33 @@ abstract class BaseViewModel<VIEW_STATE : ViewState, NOTIFICATION : Presentation
         DomainToPresentationMapper<in DomainException, out PresentationException> =
         GeneralDomainToPresentationExceptionMapper()
 
-    val navigationCommands = SingleLiveEvent<PresentationDestination>()
+    private val _destination by mutableSharedFlow<PresentationDestination>()
+    val destination by immutableFlow { _destination }
 
-    val notificationState = SingleLiveEvent<NotificationState>()
-    val presentationExceptionEvents = SingleLiveEvent<PresentationException>()
+    private val _notificationState by mutableSharedFlow<NotificationState>()
+    val notificationState by immutableFlow { _notificationState }
 
-    private val _viewState = MutableLiveData<VIEW_STATE>().apply { value = initialState() }
-    val viewState: LiveData<VIEW_STATE> get() = _viewState
+    private val _presentationExceptionEvents by mutableSharedFlow<PresentationException>()
+    val presentationExceptionEvents by immutableFlow { _presentationExceptionEvents }
 
-    val dialogEvents = SingleLiveEvent<NOTIFICATION>()
+    private val _viewState by mutableStateFlow { initialState() }
+    val viewState by immutableFlow { _viewState }
+
+    private val _dialogEvents by mutableSharedFlow<NOTIFICATION>()
+    val dialogEvents by immutableFlow { _dialogEvents }
+
     val useCaseExecutor: UseCaseExecutor = UseCaseExecutor(viewModelScope)
 
     protected fun navigate(presentationDestination: PresentationDestination) {
-        navigationCommands.value = presentationDestination
+        MainScope().launch {
+            _destination.emit(presentationDestination)
+        }
     }
 
     protected fun navigateBack() {
-        navigationCommands.value = Back
+        MainScope().launch {
+            _destination.emit(Back)
+        }
     }
 
     fun updateState(newViewState: VIEW_STATE) {
@@ -52,13 +64,15 @@ abstract class BaseViewModel<VIEW_STATE : ViewState, NOTIFICATION : Presentation
     }
 
     fun updateState(updatedState: (lastState: VIEW_STATE) -> VIEW_STATE) =
-        updateState(updatedState(currentViewState())).also {
-            globalLogger.v("Updated state ${updatedState(currentViewState())}")
+        updateState(updatedState(currentViewState)).also {
+            globalLogger.v("Updated state ${updatedState(currentViewState)}")
         }
 
     fun notifyError(exception: PresentationException) {
         globalLogger.e(exception)
-        presentationExceptionEvents.value = exception
+        MainScope().launch {
+            _presentationExceptionEvents.emit(exception)
+        }
     }
 
     fun notifyError(exception: DomainException) {
@@ -66,15 +80,21 @@ abstract class BaseViewModel<VIEW_STATE : ViewState, NOTIFICATION : Presentation
     }
 
     fun notify(dialogCommand: NOTIFICATION) {
-        dialogEvents.value = dialogCommand
+        MainScope().launch {
+            _dialogEvents.emit(dialogCommand)
+        }
     }
 
     protected fun notifyLoading(message: String) {
-        notificationState.value = Loading(message)
+        MainScope().launch {
+            _notificationState.emit(Loading(message))
+        }
     }
 
     protected fun notifyFailure(message: String, exception: PresentationException) {
-        notificationState.value = Failure(message)
+        MainScope().launch {
+            _notificationState.emit(Failure(message))
+        }
         globalLogger.e(message, exception)
     }
 
@@ -83,14 +103,27 @@ abstract class BaseViewModel<VIEW_STATE : ViewState, NOTIFICATION : Presentation
     }
 
     protected fun notifySuccess(message: String) {
-        notificationState.value = Success(message)
+        MainScope().launch {
+            _notificationState.emit(Success(message))
+        }
     }
 
     protected fun notifyNormal(message: String) {
-        notificationState.value = Normal(message)
+        MainScope().launch {
+            _notificationState.emit(Normal(message))
+        }
     }
 
-    fun currentViewState() = viewState.value ?: initialState()
+    private fun <T> mutableStateFlow(initialValueProvider: () -> T) =
+        lazy { MutableStateFlow(initialValueProvider()) }
+
+    private fun <T> mutableSharedFlow() = lazy { MutableSharedFlow<T>() }
+
+    private fun <T, FLOW : MutableSharedFlow<T>> immutableFlow(
+        initializer: () -> FLOW
+    ): Lazy<Flow<T>> = lazy { initializer() }
+
+    val currentViewState = _viewState.value
 
     open fun onFragmentCreate() = Unit
     open fun onFragmentViewCreated() = Unit
